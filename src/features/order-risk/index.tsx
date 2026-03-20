@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
+import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { ConfigDrawer } from '@/components/config-drawer'
 import { AnalyticsCards } from './components/analytics-cards'
+import { OrdersTable } from './components/orders-table'
 import { fetchOrders } from './data/data'
 import { type Order } from './data/schema'
 
@@ -45,6 +46,7 @@ export function OrderRisk() {
         ) : (
           <>
             <AnalyticsCards orders={orders} />
+            <OrdersTable data={orders} />
           </>
         )}
       </Main>

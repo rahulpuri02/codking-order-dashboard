@@ -4,12 +4,7 @@ import {
   AlertTriangle,
   Banknote,
 } from 'lucide-react'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { type Order } from '../data/schema'
 
 interface AnalyticsCardsProps {
@@ -18,10 +13,15 @@ interface AnalyticsCardsProps {
 
 export function AnalyticsCards({ orders }: AnalyticsCardsProps) {
   const totalOrders = orders.length
-  const highRiskOrders = orders.filter((o) => o.risk_level === 'High Risk').length
-  const mediumRiskOrders = orders.filter((o) => o.risk_level === 'Medium Risk').length
+  const highRiskOrders = orders.filter(
+    (o) => o.risk_level === 'High Risk'
+  ).length
+  const mediumRiskOrders = orders.filter(
+    (o) => o.risk_level === 'Medium Risk'
+  ).length
   const codOrders = orders.filter((o) => o.payment_method === 'COD').length
-  const codPercentage = totalOrders > 0 ? Math.round((codOrders / totalOrders) * 100) : 0
+  const codPercentage =
+    totalOrders > 0 ? Math.round((codOrders / totalOrders) * 100) : 0
 
   const cards = [
     {
