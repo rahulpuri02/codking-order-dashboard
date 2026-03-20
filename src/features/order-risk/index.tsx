@@ -8,6 +8,7 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { AnalyticsCards } from './components/analytics-cards'
 import { OrderDetailsDrawer } from './components/order-details-drawer'
 import { OrdersTable } from './components/orders-table'
+import { RiskCharts } from './components/risk-charts'
 import { fetchOrders } from './data/data'
 import { type Order } from './data/schema'
 
@@ -48,6 +49,7 @@ export function OrderRisk() {
         ) : (
           <>
             <AnalyticsCards orders={orders} />
+            <RiskCharts orders={orders} />
             <OrdersTable data={orders} onRowClick={setSelectedOrder} />
           </>
         )}
