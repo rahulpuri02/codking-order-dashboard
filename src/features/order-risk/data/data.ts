@@ -5,7 +5,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { env } from '@/lib/environment'
-import { rawOrderSchema, type Order, type RawOrder, type RiskLevel } from './schema'
+import {type Order, type RawOrder, type RiskLevel } from './schema'
 
 export const RISK_THRESHOLDS = {
   HIGH: 70,
@@ -57,9 +57,8 @@ export function enrichOrder(raw: RawOrder): Order {
 export async function fetchOrders(): Promise<Order[]> {
   const response = await fetch(env.VITE_ORDERS_API_URL)
   if (!response.ok) throw new Error('Failed to fetch orders')
-  const json = await response.json()
-  const raw = rawOrderSchema.array().parse(json)
-  return raw.map(enrichOrder)
+  const orders: RawOrder[] = await response.json()
+  return orders.map(order => enrichOrder(order))
 }
 
 export function formatCurrency(amount: number): string {

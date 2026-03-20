@@ -7,7 +7,6 @@ const envSchema = z.object({
 const parsed = envSchema.safeParse(import.meta.env)
 
 if (!parsed.success) {
-  console.error('❌ Invalid environment variables:', z.treeifyError(parsed.error))
   throw new Error('Invalid environment variables')
 }
 
