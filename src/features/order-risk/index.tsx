@@ -6,6 +6,7 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { AnalyticsCards } from './components/analytics-cards'
+import { OrderDetailsDrawer } from './components/order-details-drawer'
 import { OrdersTable } from './components/orders-table'
 import { fetchOrders } from './data/data'
 import { type Order } from './data/schema'
@@ -13,6 +14,7 @@ import { type Order } from './data/schema'
 export function OrderRisk() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 
   useEffect(() => {
     fetchOrders()
@@ -46,10 +48,18 @@ export function OrderRisk() {
         ) : (
           <>
             <AnalyticsCards orders={orders} />
-            <OrdersTable data={orders} />
+            <OrdersTable data={orders} onRowClick={setSelectedOrder} />
           </>
         )}
       </Main>
+
+      <OrderDetailsDrawer
+        order={selectedOrder}
+        open={selectedOrder !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedOrder(null)
+        }}
+      />
     </>
   )
 }
