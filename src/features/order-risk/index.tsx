@@ -1,21 +1,49 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { AnalyticsCards } from './components/analytics-cards'
-import { OrderDetailsDrawer } from './components/order-details-drawer'
+import { LoadingSkeleton } from './components/loading-skeleton'
+import {
+  OrderDetailsDrawer,
+  type OrderAction,
+} from './components/order-details-drawer'
 import { OrdersTable } from './components/orders-table'
 import { RiskCharts } from './components/risk-charts'
-import { fetchOrders } from './data/data'
+import { enrichOrder, fetchOrders } from './data/data'
 import { type Order } from './data/schema'
 
 export function OrderRisk() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+
+  const handleAction = useCallback((orderId: string, action: OrderAction) => {
+    const updateOrder = (order: Order): Order => {
+      if (action === 'prepaid') {
+        const updated = {
+          ...order,
+          payment_method: 'Prepaid' as const,
+          prepaid_orders: order.prepaid_orders + 1,
+          cod_orders: Math.max(0, order.cod_orders - 1),
+        }
+        return enrichOrder(updated)
+      }
+      if (action === 'safe') {
+        return { ...order, risk_score: 0, risk_level: 'Safe' as const }
+      }
+      return order
+    }
+
+    setOrders((prev) =>
+      prev.map((o) => (o.order_id === orderId ? updateOrder(o) : o))
+    )
+    setSelectedOrder((prev) =>
+      prev?.order_id === orderId ? updateOrder(prev) : prev
+    )
+  }, [])
 
   useEffect(() => {
     fetchOrders()
@@ -30,7 +58,6 @@ export function OrderRisk() {
         <div className='ms-auto flex items-center space-x-4'>
           <ThemeSwitch />
           <ConfigDrawer />
-          <ProfileDropdown />
         </div>
       </Header>
 
@@ -45,7 +72,7 @@ export function OrderRisk() {
         </div>
 
         {loading ? (
-          <div className='text-sm text-muted-foreground'>Loading orders...</div>
+          <LoadingSkeleton />
         ) : (
           <>
             <AnalyticsCards orders={orders} />
@@ -61,6 +88,7 @@ export function OrderRisk() {
         onOpenChange={(open) => {
           if (!open) setSelectedOrder(null)
         }}
+        onAction={handleAction}
       />
     </>
   )

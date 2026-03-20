@@ -39,10 +39,13 @@ const riskBarColors: Record<string, string> = {
   Safe: 'bg-green-500',
 }
 
+export type OrderAction = 'otp' | 'prepaid' | 'safe'
+
 interface OrderDetailsDrawerProps {
   order: Order | null
   open: boolean
   onOpenChange: (open: boolean) => void
+  onAction?: (orderId: string, action: OrderAction) => void
 }
 
 function DetailRow({
@@ -69,6 +72,7 @@ export function OrderDetailsDrawer({
   order,
   open,
   onOpenChange,
+  onAction,
 }: OrderDetailsDrawerProps) {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [actionDone, setActionDone] = useState<string | null>(null)
@@ -81,11 +85,12 @@ export function OrderDetailsDrawer({
       ? Math.round((order.cod_orders / order.total_orders) * 100)
       : 0
 
-  const handleAction = (action: string) => {
+  const handleAction = (action: OrderAction) => {
     setActionLoading(action)
     setTimeout(() => {
       setActionLoading(null)
       setActionDone(action)
+      onAction?.(order.order_id, action)
       setTimeout(() => setActionDone(null), 2000)
     }, 1500)
   }

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import {
-  type ColumnFiltersState,
-  type PaginationState,
   type SortingState,
   type VisibilityState,
   flexRender,
@@ -14,6 +13,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
+import { useTableUrlState } from '@/hooks/use-table-url-state'
 import {
   Table,
   TableBody,
@@ -33,13 +33,28 @@ interface OrdersTableProps {
 }
 
 export function OrdersTable({ data, onRowClick }: OrdersTableProps) {
+  const search = useSearch({ from: '/_authenticated/order-risk/' })
+  const navigate = useNavigate({ from: '/order-risk' })
+
   const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [globalFilter, setGlobalFilter] = useState('')
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
+
+  const {
+    globalFilter,
+    onGlobalFilterChange,
+    columnFilters,
+    onColumnFiltersChange,
+    pagination,
+    onPaginationChange,
+  } = useTableUrlState({
+    search,
+    navigate,
+    globalFilter: { key: 'filter' },
+    columnFilters: [
+      { columnId: 'city', searchKey: 'city', type: 'array' },
+      { columnId: 'order_status', searchKey: 'order_status', type: 'array' },
+      { columnId: 'risk_level', searchKey: 'risk_level', type: 'array' },
+    ],
   })
 
   const cityOptions = useMemo(() => {
@@ -59,20 +74,16 @@ export function OrdersTable({ data, onRowClick }: OrdersTableProps) {
       pagination,
     },
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
+    onColumnFiltersChange: onColumnFiltersChange,
     onColumnVisibilityChange: setColumnVisibility,
-    onGlobalFilterChange: setGlobalFilter,
-    onPaginationChange: setPagination,
+    onGlobalFilterChange: onGlobalFilterChange,
+    onPaginationChange: onPaginationChange,
     globalFilterFn: (row, _columnId, filterValue) => {
-      const search = String(filterValue).toLowerCase()
+      const s = String(filterValue).toLowerCase()
       const orderId = String(row.getValue('order_id')).toLowerCase()
       const customer = String(row.getValue('customer')).toLowerCase()
       const phone = String(row.getValue('phone')).toLowerCase()
-      return (
-        orderId.includes(search) ||
-        customer.includes(search) ||
-        phone.includes(search)
-      )
+      return orderId.includes(s) || customer.includes(s) || phone.includes(s)
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -158,9 +169,14 @@ export function OrdersTable({ data, onRowClick }: OrdersTableProps) {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className='h-24 text-center'
+                  className='h-48 text-center'
                 >
-                  No results.
+                  <div className='flex flex-col items-center gap-2'>
+                    <span className='text-lg font-medium'>No orders found</span>
+                    <span className='text-sm text-muted-foreground'>
+                      Try adjusting your search or filter criteria.
+                    </span>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
