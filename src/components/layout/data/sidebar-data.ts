@@ -1,4 +1,4 @@
-import { LayoutDashboard, ShieldAlert, Command } from 'lucide-react'
+import { ShieldAlert, Command } from 'lucide-react'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
@@ -21,11 +21,6 @@ export const sidebarData: SidebarData = {
         {
           title: 'Dashboard',
           url: '/',
-          icon: LayoutDashboard,
-        },
-        {
-          title: 'Order Risk',
-          url: '/order-risk',
           icon: ShieldAlert,
         },
       ],

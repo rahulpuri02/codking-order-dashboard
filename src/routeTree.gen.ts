@@ -16,7 +16,6 @@ import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as errors403RouteImport } from './routes/(errors)/403'
 import { Route as errors401RouteImport } from './routes/(errors)/401'
-import { Route as AuthenticatedOrderRiskIndexRouteImport } from './routes/_authenticated/order-risk/index'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -52,12 +51,6 @@ const errors401Route = errors401RouteImport.update({
   path: '/401',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedOrderRiskIndexRoute =
-  AuthenticatedOrderRiskIndexRouteImport.update({
-    id: '/order-risk/',
-    path: '/order-risk/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/401': typeof errors401Route
@@ -66,7 +59,6 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/': typeof AuthenticatedIndexRoute
-  '/order-risk': typeof AuthenticatedOrderRiskIndexRoute
 }
 export interface FileRoutesByTo {
   '/401': typeof errors401Route
@@ -75,7 +67,6 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/': typeof AuthenticatedIndexRoute
-  '/order-risk': typeof AuthenticatedOrderRiskIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,13 +77,12 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/_authenticated/order-risk/': typeof AuthenticatedOrderRiskIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/401' | '/403' | '/404' | '/500' | '/503' | '/' | '/order-risk'
+  fullPaths: '/401' | '/403' | '/404' | '/500' | '/503' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/401' | '/403' | '/404' | '/500' | '/503' | '/' | '/order-risk'
+  to: '/401' | '/403' | '/404' | '/500' | '/503' | '/'
   id:
     | '__root__'
     | '/_authenticated'
@@ -102,7 +92,6 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/'
-    | '/_authenticated/order-risk/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -165,24 +154,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof errors401RouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/order-risk/': {
-      id: '/_authenticated/order-risk/'
-      path: '/order-risk'
-      fullPath: '/order-risk'
-      preLoaderRoute: typeof AuthenticatedOrderRiskIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedOrderRiskIndexRoute: typeof AuthenticatedOrderRiskIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedOrderRiskIndexRoute: AuthenticatedOrderRiskIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

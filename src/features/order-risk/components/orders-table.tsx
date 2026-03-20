@@ -33,8 +33,8 @@ interface OrdersTableProps {
 }
 
 export function OrdersTable({ data, onRowClick }: OrdersTableProps) {
-  const search = useSearch({ from: '/_authenticated/order-risk/' })
-  const navigate = useNavigate({ from: '/order-risk' })
+  const search = useSearch({ from: '/_authenticated/' })
+  const navigate = useNavigate({ from: '/' })
 
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})

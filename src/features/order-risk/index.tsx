@@ -19,31 +19,48 @@ export function OrderRisk() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [markedSafe, setMarkedSafe] = useState<Set<string>>(new Set())
 
-  const handleAction = useCallback((orderId: string, action: OrderAction) => {
-    const updateOrder = (order: Order): Order => {
-      if (action === 'prepaid') {
-        const updated = {
-          ...order,
-          payment_method: 'Prepaid' as const,
-          prepaid_orders: order.prepaid_orders + 1,
-          cod_orders: Math.max(0, order.cod_orders - 1),
+  const handleAction = useCallback(
+    (orderId: string, action: OrderAction) => {
+      const isSafe = (id: string) => markedSafe.has(id) || action === 'safe'
+
+      const updateOrder = (order: Order): Order => {
+        if (action === 'prepaid') {
+          const updated = {
+            ...order,
+            payment_method: 'Prepaid' as const,
+            prepaid_orders: order.prepaid_orders + 1,
+            cod_orders: Math.max(0, order.cod_orders - 1),
+          }
+          if (isSafe(order.order_id)) {
+            return {
+              ...updated,
+              risk_score: 0,
+              risk_level: 'Safe' as const,
+            }
+          }
+          return enrichOrder(updated)
         }
-        return enrichOrder(updated)
+        if (action === 'safe') {
+          return { ...order, risk_score: 0, risk_level: 'Safe' as const }
+        }
+        return order
       }
-      if (action === 'safe') {
-        return { ...order, risk_score: 0, risk_level: 'Safe' as const }
-      }
-      return order
-    }
 
-    setOrders((prev) =>
-      prev.map((o) => (o.order_id === orderId ? updateOrder(o) : o))
-    )
-    setSelectedOrder((prev) =>
-      prev?.order_id === orderId ? updateOrder(prev) : prev
-    )
-  }, [])
+      if (action === 'safe') {
+        setMarkedSafe((prev) => new Set(prev).add(orderId))
+      }
+
+      setOrders((prev) =>
+        prev.map((o) => (o.order_id === orderId ? updateOrder(o) : o))
+      )
+      setSelectedOrder((prev) =>
+        prev?.order_id === orderId ? updateOrder(prev) : prev
+      )
+    },
+    [markedSafe]
+  )
 
   useEffect(() => {
     fetchOrders()
