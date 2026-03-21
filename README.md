@@ -1,119 +1,64 @@
-# Shadcn Admin Dashboard
+# Order Risk Dashboard
 
-Admin Dashboard UI crafted with Shadcn and Vite. Built with responsiveness and accessibility in mind.
+A merchant-facing dashboard to monitor potentially risky COD orders and take actions. Built as part of the COD King Frontend Engineering Assignment.
 
-![alt text](public/images/shadcn-admin.png)
+## Setup
 
-[![Sponsored by Clerk](https://img.shields.io/badge/Sponsored%20by-Clerk-5b6ee1?logo=clerk)](https://go.clerk.com/GttUAaK)
+```bash
+git clone https://github.com/rahulpuri02/codking-order-dashboard
+cd order-risk-dashboard
+pnpm install
+pnpm dev
+```
 
-I've been creating dashboard UIs at work and for my personal projects. I always wanted to make a reusable collection of dashboard UI for future projects; and here it is now. While I've created a few custom components, some of the code is directly adapted from ShadcnUI examples.
+Create a `.env` file:
 
-> This is not a starter project (template) though. I'll probably make one in the future.
+```
+VITE_ORDERS_API_URL=https://cdn.shopify.com/s/files/1/0806/4876/5758/files/user_mock_data.json
+```
+
+## Architecture
+
+```
+src/
+  features/order-risk/       # Main feature module
+    components/              # Table, drawer, charts, cards, skeletons
+    data/                    # Schema, risk calculation, data fetching
+  components/
+    ui/                      # shadcn/ui primitives
+    data-table/              # Reusable table components (toolbar, pagination, filters)
+    layout/                  # Sidebar, header, nav
+  hooks/                     # URL state sync hook
+  routes/                    # TanStack Router file-based routes
+```
+
+All order risk logic is self-contained in `src/features/order-risk/`. Risk score is calculated as `(cod_orders / total_orders) * 100` with thresholds at 70 (High Risk) and 40 (Medium Risk).
 
 ## Features
 
-- Light/dark mode
-- Responsive
-- Accessible
-- With built-in Sidebar component
-- Global search command
-- 10+ pages
-- Extra custom components
-- RTL support
+- **Analytics Cards** — Total orders, high risk count, COD percentage, average risk score
+- **Data Table** — 7 columns with search, sorting, multi-column filtering, pagination
+- **Order Details Drawer** — Customer info, COD vs prepaid breakdown, risk score bar
+- **Action Buttons** — Send OTP, Force Prepaid, Mark Safe (optimistic UI updates)
+- **Charts** — Risk distribution donut chart, COD vs Prepaid radar chart by top cities
+- **URL-based Filters** — Filter state synced to URL search params
+- **Loading Skeletons** — Shimmer placeholders matching actual layout
+- **Empty States** — Friendly message when no orders match filters
 
-<details>
-<summary>Customized Components (click to expand)</summary>
+## Libraries
 
-This project uses Shadcn UI components, but some have been slightly modified for better RTL (Right-to-Left) support and other improvements. These customized components differ from the original Shadcn UI versions.
+| Library | Purpose |
+|---------|---------|
+| React + TypeScript | UI framework |
+| Vite | Build tool |
+| TailwindCSS + shadcn/ui | Styling and components |
+| TanStack Router | File-based routing with URL search param validation (Zod) |
+| TanStack React Table | Data table with sorting, filtering, pagination |
+| Recharts | Donut and radar charts |
+| Lucide React | Icons |
 
-If you want to update components using the Shadcn CLI (e.g., `npx shadcn@latest add <component>`), it's generally safe for non-customized components. For the listed customized ones, you may need to manually merge changes to preserve the project's modifications and avoid overwriting RTL support or other updates.
+## Assumptions
 
-> If you don't require RTL support, you can safely update the 'RTL Updated Components' via the Shadcn CLI, as these changes are primarily for RTL compatibility. The 'Modified Components' may have other customizations to consider.
-
-### Modified Components
-
-- scroll-area
-- sonner
-- separator
-
-### RTL Updated Components
-
-- alert-dialog
-- calendar
-- command
-- dialog
-- dropdown-menu
-- select
-- table
-- sheet
-- sidebar
-- switch
-
-**Notes:**
-
-- **Modified Components**: These have general updates, potentially including RTL adjustments.
-- **RTL Updated Components**: These have specific changes for RTL language support (e.g., layout, positioning).
-- For implementation details, check the source files in `src/components/ui/`.
-- All other Shadcn UI components in the project are standard and can be safely updated via the CLI.
-
-</details>
-
-## Tech Stack
-
-**UI:** [ShadcnUI](https://ui.shadcn.com) (TailwindCSS + RadixUI)
-
-**Build Tool:** [Vite](https://vitejs.dev/)
-
-**Routing:** [TanStack Router](https://tanstack.com/router/latest)
-
-**Type Checking:** [TypeScript](https://www.typescriptlang.org/)
-
-**Linting/Formatting:** [ESLint](https://eslint.org/) & [Prettier](https://prettier.io/)
-
-**Icons:** [Lucide Icons](https://lucide.dev/icons/), [Tabler Icons](https://tabler.io/icons) (Brand icons only)
-
-**Auth (partial):** [Clerk](https://go.clerk.com/GttUAaK)
-
-## Run Locally
-
-Clone the project
-
-```bash
-  git clone https://github.com/satnaing/shadcn-admin.git
-```
-
-Go to the project directory
-
-```bash
-  cd shadcn-admin
-```
-
-Install dependencies
-
-```bash
-  pnpm install
-```
-
-Start the server
-
-```bash
-  pnpm run dev
-```
-
-## Sponsoring this project ❤️
-
-If you find this project helpful or use this in your own work, consider [sponsoring me](https://github.com/sponsors/satnaing) to support development and maintenance. You can [buy me a coffee](https://buymeacoffee.com/satnaing) as well. Don’t worry, every penny helps. Thank you! 🙏
-
-For questions or sponsorship inquiries, feel free to reach out at [satnaingdev@gmail.com](mailto:satnaingdev@gmail.com).
-
-### Current Sponsor
-
-- [Clerk](https://go.clerk.com/GttUAaK) - authentication and user management for the modern web
-
-## Author
-
-Crafted with 🤍 by [@satnaing](https://github.com/satnaing)
-
-## License
-
-Licensed under the [MIT License](https://choosealicense.com/licenses/mit/)
+- Risk score is derived purely from COD order ratio — no server-side risk engine
+- Actions (Send OTP, Force Prepaid, Mark Safe) are simulated locally with optimistic updates
+- Mock data is fetched from a static Shopify CDN JSON endpoint
