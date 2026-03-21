@@ -47,15 +47,15 @@ All order risk logic is self-contained in `src/features/order-risk/`. Risk score
 
 ## Libraries
 
-| Library | Purpose |
-|---------|---------|
-| React + TypeScript | UI framework |
-| Vite | Build tool |
-| TailwindCSS + shadcn/ui | Styling and components |
-| TanStack Router | File-based routing with URL search param validation (Zod) |
-| TanStack React Table | Data table with sorting, filtering, pagination |
-| Recharts | Donut and radar charts |
-| Lucide React | Icons |
+| Library                 | Purpose                                                   |
+| ----------------------- | --------------------------------------------------------- |
+| React + TypeScript      | UI framework                                              |
+| Vite                    | Build tool                                                |
+| TailwindCSS + shadcn/ui | Styling and components                                    |
+| TanStack Router         | File-based routing with URL search param validation (Zod) |
+| TanStack React Table    | Data table with sorting, filtering, pagination            |
+| Recharts                | Donut and radar charts                                    |
+| Lucide React            | Icons                                                     |
 
 ## Assumptions
 
